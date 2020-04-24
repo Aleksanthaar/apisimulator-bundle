@@ -17,7 +17,38 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder(ApisimulatorBundle::BUNDLE_KEY);
         $rootNode    = method_exists(TreeBuilder::class, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root(ApisimulatorBundle::BUNDLE_KEY);
 
-        // Later
+        $rootNode
+            ->children()
+                ->arrayNode('guards')
+                    ->children()
+                        ->arrayNode('methods')
+                            ->defaultValue([])
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->arrayNode('status_codes')
+                            ->defaultValue([])
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->arrayNode('paths')
+                            ->defaultValue([])
+                            ->scalarPrototype()->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('headers_removal')
+                    ->children()
+                        ->arrayNode('request')
+                            ->defaultValue([])
+                            ->scalarPrototype()->end()
+                        ->end()
+                        ->arrayNode('response')
+                            ->defaultValue([])
+                            ->scalarPrototype()->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

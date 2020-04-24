@@ -14,8 +14,17 @@ class ApisimulatorExtension extends Extension
     {
         $configuration = new Configuration();
         $config        = $this->processConfiguration($configuration, $configs);
-        
-        // Later
+
+        if (!empty($config['guards'])) {
+            $container->setParameter('apisimulator.guards.methods', $config['guards']['methods']);
+            $container->setParameter('apisimulator.guards.status_codes', $config['guards']['status_codes']);
+            $container->setParameter('apisimulator.guards.paths', $config['guards']['paths']);
+        }
+
+        if (!empty($config['headers_removal'])) {
+            $container->setParameter('apisimulator.headers_removal.request', $config['headers_removal']['request']);
+            $container->setParameter('apisimulator.headers_removal.response', $config['headers_removal']['response']);
+        }
 
         $loader = new YamlFileLoader($container, new FileLocator(dirname(__DIR__).'/Resources/config'));
 

@@ -4,7 +4,7 @@ namespace Aleksanthaar\ApisimulatorBundle\DataCollector;
 
 use Aleksanthaar\ApisimulatorBundle\Extractor\RequestExtractor;
 use Aleksanthaar\ApisimulatorBundle\Extractor\ResponseExtractor;
-use Symfony\Component\HttpFoundation\HeaderBag;
+use Aleksanthaar\ApisimulatorBundle\Guard\CollectionGuard;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -15,6 +15,11 @@ class ApiSimulatorCollector extends DataCollector
 {
     public const COLLECTOR_NAME = 'data_collector.apisimulator';
     public const REMOVE_HEADERS = [];
+
+    /**
+     * @var CollectionGuard
+     */
+    protected $guard;
 
     /**
      * @var RequestExtractor
@@ -42,11 +47,13 @@ class ApiSimulatorCollector extends DataCollector
     protected $warnings = [];
 
     public function __construct(
+        CollectionGuard $guard,
         RequestExtractor $reqExtractor,
         ResponseExtractor $resExtractor,
         Environment $twig,
         RouterInterface $router
     ) {
+        $this->guard        = $guard;
         $this->reqExtractor = $reqExtractor;
         $this->resExtractor = $resExtractor;
         $this->twig         = $twig;
@@ -55,6 +62,21 @@ class ApiSimulatorCollector extends DataCollector
 
     public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
+        if (!$this->guard->collectorShouldCollect($request, $response)) {
+            $this->data = [
+                'collected' => false,
+                'warnings'  => [
+                    [
+                        'message' => $this->guard->getReason(),
+                    ],
+                ],  
+            ];
+
+            return;
+        }
+
+        // Todo: merge warnings
+
         $requestContext  = $this->reqExtractor->collect($request);
         $responseContext = $this->resExtractor->collect($response);
         $context         = [

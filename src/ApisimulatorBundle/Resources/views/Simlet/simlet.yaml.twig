@@ -1,0 +1,36 @@
+request:
+    - method: {{ method }}
+
+    - where: uriPath
+      equals: "{{ request.pathInfo}}"
+    {% for key, value in request.query ~%}
+    - where: uriQueryParameter
+      named: {{ key }}
+      {% if value is empty %}exists: true{% else %}equals: {{ value }}{% endif %}
+    {% endfor %}
+    {% for header, values in responseHeaders ~%}
+    - where: header
+      named: '{{ header }}'
+      equals: '{{ values|join(';') -}}'
+    {% endfor %}
+    {% for jsonPath, value in requestBody ~%}
+    - where: body
+      element: '{{ jsonPath }}'
+      equals: '{{ value -}}'
+    {% endfor %}
+    {% for formValue in requestFormData ~%}
+    - where: body
+      contains: '{{ formValue -}}'
+    {% endfor %}
+
+response:
+    type: stub
+    {% if responseHeaders is not empty -%}
+    headers:
+    {%- for header, values in responseHeaders ~%}
+    - {{ header }}: '{{ values|join(';') -}}'
+    {%- endfor %}
+    {% endif ~%}
+    status: {{ response.statusCode }}
+    body:
+        file: '${simlets.path}/__your_path__/response.json'

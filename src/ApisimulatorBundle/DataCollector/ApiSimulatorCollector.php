@@ -48,7 +48,7 @@ class ApiSimulatorCollector extends DataCollector
     {
         $this->handleRequestData($request);
 
-        $simlet = $this->twig->render('simlet.yaml.twig', [
+        $simlet = $this->twig->render('@Apisimulator/Simlet/simlet.yaml.twig', [
             'method'          => $request->getMethod(),
             'request'         => $request,
             'requestHeaders'  => $this->cleanHeaders($request->headers),

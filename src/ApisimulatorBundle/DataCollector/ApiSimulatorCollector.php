@@ -12,6 +12,7 @@ use Twig\Environment;
 class ApiSimulatorCollector extends DataCollector
 {
     public const COLLECTOR_NAME = 'data_collector.apisimulator';
+    public const REMOVE_HEADERS = [];
 
     /**
      * @var Environment

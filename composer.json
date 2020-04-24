@@ -1,0 +1,23 @@
+{
+    "name": "aleksanthaar/apisimulator-bundle",
+    "description": "Simlet generator integrated to Symfony profiler",
+    "type": "library",
+    "license": "GPL v3",
+    "authors": [
+        {
+            "name": "alhuo-smile",
+            "email": "alexandre.huon@smile.fr"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Aleksanthaar\\": "src/"
+        }
+    },
+    "require": {
+        "symfony/http-foundation": "^5.0",
+        "symfony/routing": "^5.0",
+        "twig/twig": "^3.0",
+        "symfony/http-kernel": "^5.0"
+    }
+}

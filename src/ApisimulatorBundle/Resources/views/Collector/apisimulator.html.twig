@@ -1,0 +1,64 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block head %}
+    {{ parent() }}
+
+    <style type="text/css">
+        .codeBlock {
+            background: #333;
+            color: #FFF;
+            border: solid #AAA 1px;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .codeBlock pre {
+            line-height: 8px;
+            padding: 0 0 10px 0;
+        }
+    </style>
+{% endblock %}
+
+{% block menu %}
+    {# This left-hand menu appears when using the full-screen profiler. #}
+    <span class="label{% if collector.collected %} disabled{% endif %}">
+        <span class="icon"></span>
+        <strong>Api Simulator</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>Api Simulator</h2>
+
+    {% if collector.collected %}
+        <h3>simlet.yaml</h3>
+        <div class="codeBlock">
+            <pre>
+                {{- collector.simlet|nl2br -}}
+            </pre>
+        </div>
+
+        <h3>Warnings</h3>
+        {% for warning in collector.warnings %}
+            <p class="warning">
+               {{ warning.message }}<br />
+               {% if warning.debug %}
+                   <div class="codeBlock">
+                       <code>{{ warning.debug }}</code>
+                   </div>
+               {% endif %}
+            </p>
+        {% else %}
+            <p>No warnings, good job!</p>
+        {% endfor %}
+
+        <h3>response.json</h3>
+        <div class="codeBlock">
+            <code>{{ collector.response.content }}</code>
+        </div>
+    {% else %}
+        <div class="empty">
+            <p>Status code ({{ collector.response.statusCode }}) didn't trigger any simlet generation.</p>
+        </div>
+    {% endif %}
+{% endblock %}

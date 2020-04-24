@@ -1,0 +1,11 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\DataCollector\ApiSimulatorCollector:
+        tags:
+            -
+                name:     'data_collector'
+                template: '@Apisimulator/Collector/apisimulator.html.twig'
+                id:       !php/const Aleksanthaar\ApisimulatorBundle\DataCollector\ApiSimulatorCollector::COLLECTOR_NAME

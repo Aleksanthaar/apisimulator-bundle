@@ -21,7 +21,7 @@
 
 {% block menu %}
     {# This left-hand menu appears when using the full-screen profiler. #}
-    <span class="label{% if collector.collected %} disabled{% endif %}">
+    <span class="label{% if not collector.collected %} disabled{% endif %}">
         <span class="icon"></span>
         <strong>Api Simulator</strong>
     </span>
@@ -38,19 +38,6 @@
             </pre>
         </div>
 
-        <h3>Warnings</h3>
-        {% for warning in collector.warnings %}
-            <p class="warning">
-               {{ warning.message }}<br />
-               {% if warning.debug %}
-                   <div class="codeBlock">
-                       <code>{{ warning.debug }}</code>
-                   </div>
-               {% endif %}
-            </p>
-        {% else %}
-            <p>No warnings, good job!</p>
-        {% endfor %}
 
         <h3>response.json</h3>
         <div class="codeBlock">
@@ -58,7 +45,21 @@
         </div>
     {% else %}
         <div class="empty">
-            <p>Status code ({{ collector.response.statusCode }}) didn't trigger any simlet generation.</p>
+            <p>This request / response pair didn't generate any simlet.</p>
         </div>
     {% endif %}
+
+    <h2>Warnings</h2>
+    {% for warning in collector.warnings %}
+        <p class="warning">
+           {{ warning.message }}<br />
+           {% if warning.debug|default('') %}
+               <div class="codeBlock">
+                   <code>{{ warning.debug }}</code>
+               </div>
+           {% endif %}
+        </p>
+    {% else %}
+        <p>No warnings, good job!</p>
+    {% endfor %}
 {% endblock %}

@@ -1,5 +1,5 @@
 request:
-    - method: {{ method }}
+    - method: {{ request.method }}
 
     - where: uriPath
       equals: "{{ request.pathInfo}}"

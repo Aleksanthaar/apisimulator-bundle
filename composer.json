@@ -18,6 +18,11 @@
         "symfony/http-foundation": "^4.0 || ^5.0.7",
         "symfony/routing": "^4.0 || ^5.0",
         "twig/twig": "^2.0 || ^3.0",
-        "symfony/http-kernel": "^4.0 || ^5.0"
+        "symfony/http-kernel": "^4.0 || ^5.0",
+        "symfony/config": "^5.0",
+        "symfony/dependency-injection": "^5.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.19"
     }
 }

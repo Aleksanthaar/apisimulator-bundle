@@ -3,7 +3,7 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\DataCollector\ApiSimulatorCollector:
+    Aleksanthaar\ApisimulatorBundle\DataCollector\ApiSimulatorCollector:
         tags:
             -
                 name:     'data_collector'

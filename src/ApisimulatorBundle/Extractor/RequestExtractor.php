@@ -9,11 +9,6 @@ class RequestExtractor
 {
     use HeaderRemovalTrait;
 
-    public function __construct(array $headersRemoval)
-    {
-        $this->headersRemoval = $headersRemoval;
-    }
-
     public const CONTENT_TYPE_FORM_ENCODED = 'application/x-www-form-urlencoded';
     public const CONTENT_TYPE_JSON         = 'application/json';
 
@@ -31,6 +26,23 @@ class RequestExtractor
      * @var array
      */
     protected $postContent = [];
+    /**
+     * @var array
+     */
+    protected $customWarnings = [];
+    /**
+     * @var array
+     */
+    protected $warningsBodyKeys = [];
+
+    public function __construct(array $headersRemoval, array $customWarnings)
+    {
+        $this->headersRemoval = $headersRemoval;
+        $this->customWarnings = $customWarnings;
+
+        // Early computing
+        $this->warningsBodyKeys = array_keys($this->customWarnings['requestBody']);
+    }
 
     public function collect(Request $request): array
     {
@@ -53,16 +65,31 @@ class RequestExtractor
             }
         }
 
+        $headers = $this->cleanHeaders($request->headers);
+
+        $this->checkHeadersForWarning($headers);
+
         return [
             'requestBody'     => $this->postContent,
             'requestFormData' => $this->postData,
-            'requestHeaders'  => $this->cleanHeaders($request->headers),
+            'requestHeaders'  => $headers,
         ];
     }
 
     protected function storeFormData(array $formData): void
     {
         foreach($formData as $value) {
+            $warnings = array_filter($this->warningsBodyKeys, function (string $warningKey) use ($value) {
+                return false !== strpos($value, $warningKey);
+            });
+
+            array_walk($warnings, function($warningName) use ($value) {
+                $warning = $this->customWarnings['requestBody'][$warningName];
+                $message = sprintf('Request formData element `%s` created a warning: %s', $value, $warning['message']);
+
+                $this->registerWarning($message, $value);
+            });
+
             $this->postData[] = $value;
         }
     }
@@ -81,8 +108,33 @@ class RequestExtractor
                     $this->registerWarning($message);
                 }
 
+                $warnings = array_filter($this->warningsBodyKeys, function (string $warningKey) use ($key) {
+                    return false !== strpos($key, $warningKey);
+                });
+
+                array_walk($warnings, function($warningName) use ($key, $value) {
+                    $warning = $this->customWarnings['requestBody'][$warningName];
+                    $message = sprintf('Request body element `%s` created a warning for %s: %s', $key, $warningName, $warning['message']);
+
+                    $this->registerWarning($message, $value);
+                });
+
                 $this->postContent[$key] = $value;
             }
+        }
+    }
+
+    protected function checkHeadersForWarning(array $headers): void
+    {
+        $headersWithWarnings = array_filter($headers, function(string $key) {
+            return in_array($key, array_keys($this->customWarnings['requestHeaders']));
+        }, ARRAY_FILTER_USE_KEY);
+
+        foreach ($headersWithWarnings as $header => $value) {
+            $warning = $this->customWarnings['requestHeaders'][$header];
+            $message = sprintf('Request header `%s` created a warning: %s', $header, $warning['message']);
+
+            $this->registerWarning($message, json_encode($value));
         }
     }
 
@@ -92,5 +144,13 @@ class RequestExtractor
             'message' => $message,
             'debug'   => $debug,
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getWarnings(): array
+    {
+        return $this->warnings;
     }
 }

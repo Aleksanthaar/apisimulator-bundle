@@ -8,7 +8,7 @@ request:
       named: {{ key }}
       {% if value is empty %}exists: true{% else %}equals: {{ value }}{% endif %}
     {% endfor %}
-    {% for header, values in responseHeaders ~%}
+    {% for header, values in requestHeaders ~%}
     - where: header
       named: '{{ header }}'
       equals: '{{ values|join(';') -}}'

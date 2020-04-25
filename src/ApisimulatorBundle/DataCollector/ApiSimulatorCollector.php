@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 use Twig\Environment;
 
 class ApiSimulatorCollector extends DataCollector
@@ -46,18 +47,25 @@ class ApiSimulatorCollector extends DataCollector
      */
     protected $warnings = [];
 
+    /**
+     * @var Stopwatch
+     */
+    protected $stopwatch;
+
     public function __construct(
         CollectionGuard $guard,
         RequestExtractor $reqExtractor,
         ResponseExtractor $resExtractor,
         Environment $twig,
-        RouterInterface $router
+        RouterInterface $router,
+        Stopwatch $stopwatch
     ) {
         $this->guard        = $guard;
         $this->reqExtractor = $reqExtractor;
         $this->resExtractor = $resExtractor;
         $this->twig         = $twig;
         $this->router       = $router;
+        $this->stopwatch    = $stopwatch;
     }
 
     public function collect(Request $request, Response $response, \Throwable $exception = null)
@@ -75,6 +83,8 @@ class ApiSimulatorCollector extends DataCollector
             return;
         }
 
+        $this->stopwatch->start('simulations');
+
         // Todo: merge warnings
 
         $requestContext  = $this->reqExtractor->collect($request);
@@ -87,12 +97,16 @@ class ApiSimulatorCollector extends DataCollector
         $context = array_merge($context, $requestContext, $responseContext);
         $simlet  = $this->twig->render('@Apisimulator/Simlet/simlet.yaml.twig', $context);
 
+        $warnings = array_merge($this->warnings, $this->reqExtractor->getWarnings());
+
         $this->data = [
             'simlet'       => $simlet,
             'response'     => $response,
-            'warnings'     => $this->warnings,
+            'warnings'     => $warnings,
             'collected'    => true,
         ];
+
+        $this->stopwatch->stop('simulations');
     }
 
     public function reset()

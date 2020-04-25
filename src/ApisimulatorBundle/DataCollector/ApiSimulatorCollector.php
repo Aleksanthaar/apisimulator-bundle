@@ -97,10 +97,12 @@ class ApiSimulatorCollector extends DataCollector
         $context = array_merge($context, $requestContext, $responseContext);
         $simlet  = $this->twig->render('@Apisimulator/Simlet/simlet.yaml.twig', $context);
 
+        $warnings = array_merge($this->warnings, $this->reqExtractor->getWarnings());
+
         $this->data = [
             'simlet'       => $simlet,
             'response'     => $response,
-            'warnings'     => $this->warnings,
+            'warnings'     => $warnings,
             'collected'    => true,
         ];
 

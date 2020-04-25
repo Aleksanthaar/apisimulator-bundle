@@ -16,6 +16,9 @@ services:
     # TODO: move everything below to compiler pass
     Aleksanthaar\ApisimulatorBundle\Extractor\RequestExtractor:
         arguments:
+            $customWarnings:
+                requestHeaders: '%apisimulator.warnings.request_headers%'
+                requestBody: '%apisimulator.warnings.request_body%'
             $headersRemoval: '%apisimulator.headers_removal.request%'
 
     Aleksanthaar\ApisimulatorBundle\Extractor\ResponseExtractor:

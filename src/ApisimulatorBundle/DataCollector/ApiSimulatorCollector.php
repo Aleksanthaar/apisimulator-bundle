@@ -18,9 +18,9 @@ class ApiSimulatorCollector extends DataCollector
     public const REMOVE_HEADERS = [];
 
     /**
-     * @var CollectionGuard
+     * @var CollectionGuardInterface[]
      */
-    protected $guard;
+    protected $guards = [];
 
     /**
      * @var RequestExtractor
@@ -53,14 +53,14 @@ class ApiSimulatorCollector extends DataCollector
     protected $stopwatch;
 
     public function __construct(
-        CollectionGuard $guard,
+        iterable $guards,
         RequestExtractor $reqExtractor,
         ResponseExtractor $resExtractor,
         Environment $twig,
         RouterInterface $router,
         Stopwatch $stopwatch
     ) {
-        $this->guard        = $guard;
+        $this->guards       = iterator_to_array($guards);
         $this->reqExtractor = $reqExtractor;
         $this->resExtractor = $resExtractor;
         $this->twig         = $twig;
@@ -70,22 +70,22 @@ class ApiSimulatorCollector extends DataCollector
 
     public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
-        if (!$this->guard->collectorShouldCollect($request, $response)) {
-            $this->data = [
-                'collected' => false,
-                'warnings'  => [
-                    [
-                        'message' => $this->guard->getReason(),
+        foreach($this->guards as $guard) {
+            if (!$guard->collectorShouldCollect($request, $response)) {
+                $this->data = [
+                    'collected' => false,
+                    'warnings'  => [
+                        [
+                            'message' => $guard->getReason(),
+                        ],
                     ],
-                ],  
-            ];
+                ];
 
-            return;
+                return;
+            }
         }
 
         $this->stopwatch->start('simulations');
-
-        // Todo: merge warnings
 
         $requestContext  = $this->reqExtractor->collect($request);
         $responseContext = $this->resExtractor->collect($response);

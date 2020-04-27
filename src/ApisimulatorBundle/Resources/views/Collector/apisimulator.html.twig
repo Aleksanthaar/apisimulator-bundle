@@ -22,13 +22,13 @@
 {% block menu %}
     {# This left-hand menu appears when using the full-screen profiler. #}
     <span class="label{% if not collector.collected %} disabled{% endif %}">
-        <span class="icon"></span>
-        <strong>Api Simulator</strong>
+        <span class="icon">{{ include('@Apisimulator/Icon/apisimulator.svg') }}</span>
+        <strong>API Simulator</strong>
     </span>
 {% endblock %}
 
 {% block panel %}
-    <h2>Api Simulator</h2>
+    <h2>API Simulator</h2>
 
     {% if collector.collected %}
         <h3>simlet.yaml</h3>

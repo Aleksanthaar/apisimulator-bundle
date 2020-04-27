@@ -2,11 +2,18 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        public: false
+
+    _instanceof:
+        Aleksanthaar\ApisimulatorBundle\Guard\CollectionGuardInterface:
+            tags: ['apisimulator.collection_guard']
 
     Aleksanthaar\ApisimulatorBundle\:
         resource: '../../'
 
     Aleksanthaar\ApisimulatorBundle\DataCollector\ApiSimulatorCollector:
+        arguments:
+            $guards: !tagged 'apisimulator.collection_guard'
         tags:
             -
                 name:     'data_collector'
@@ -25,8 +32,14 @@ services:
         arguments:
             $headersRemoval: '%apisimulator.headers_removal.response%'
 
-    Aleksanthaar\ApisimulatorBundle\Guard\CollectionGuard:
+    Aleksanthaar\ApisimulatorBundle\Guard\MethodCollectionGuard:
         arguments:
             $methods: '%apisimulator.guards.methods%'
+
+    Aleksanthaar\ApisimulatorBundle\Guard\StatusCodeCollectionGuard:
+        arguments:
             $statusCodes: '%apisimulator.guards.status_codes%'
+
+    Aleksanthaar\ApisimulatorBundle\Guard\PathCollectionGuard:
+        arguments:
             $paths: '%apisimulator.guards.paths%'

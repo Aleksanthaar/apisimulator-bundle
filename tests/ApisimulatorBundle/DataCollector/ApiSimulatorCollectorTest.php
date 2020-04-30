@@ -75,10 +75,10 @@ class ApiSimulatorCollectorTest extends TestCase
 
         $this->assertSame($expectCollected, $this->collector->getCollected());
         $this->assertSame($warnings, $this->collector->getWarnings());
-        $this->assertSame($simlet, $this->collector->getSimlet());
 
-        // Response isn't made available unless collect took place
+        // Response and simlet are made available only collect took place
         if ($expectCollected) {
+            $this->assertSame($simlet, $this->collector->getSimlet());
             $this->assertSame($response, $this->collector->getResponse());
         }
 

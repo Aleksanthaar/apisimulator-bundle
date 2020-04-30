@@ -8,17 +8,15 @@ use Aleksanthaar\ApisimulatorBundle\Guard\CollectionGuard;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Twig\Environment;
 
 class ApiSimulatorCollector extends DataCollector
 {
     public const COLLECTOR_NAME = 'data_collector.apisimulator';
-    public const REMOVE_HEADERS = [];
 
     /**
-     * @var CollectionGuardInterface[]
+     * @var array
      */
     protected $guards = [];
 
@@ -38,11 +36,6 @@ class ApiSimulatorCollector extends DataCollector
     protected $twig;
 
     /**
-     * @var RouterInterface
-     */
-    protected $router;
-
-    /**
      * @var array
      */
     protected $warnings = [];
@@ -57,14 +50,12 @@ class ApiSimulatorCollector extends DataCollector
         RequestExtractor $reqExtractor,
         ResponseExtractor $resExtractor,
         Environment $twig,
-        RouterInterface $router,
         Stopwatch $stopwatch
     ) {
         $this->guards       = iterator_to_array($guards);
         $this->reqExtractor = $reqExtractor;
         $this->resExtractor = $resExtractor;
         $this->twig         = $twig;
-        $this->router       = $router;
         $this->stopwatch    = $stopwatch;
     }
 
@@ -113,6 +104,9 @@ class ApiSimulatorCollector extends DataCollector
     {
         $this->data = [
             'collected' => false,
+            'simlet'    => null,
+            'response'  => null,
+            'warnings'  => [],
         ];
     }
 
@@ -139,10 +133,5 @@ class ApiSimulatorCollector extends DataCollector
     public function getCollected()
     {
         return $this->data['collected'];
-    }
-
-    public function getPostContent()
-    {
-        return $this->data['post_content'];
     }
 }

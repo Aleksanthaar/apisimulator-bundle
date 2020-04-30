@@ -6,7 +6,7 @@ request:
     {% for key, value in request.query ~%}
     - where: uriQueryParameter
       named: {{ key }}
-      {% if value is empty %}exists: true{% else %}equals: {{ value }}{% endif %}
+      {% if value is empty %}exists: true{% else %}equals: {{ value }}{% endif ~%}
     {% endfor %}
     {% for header, values in requestHeaders ~%}
     - where: header

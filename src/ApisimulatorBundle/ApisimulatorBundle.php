@@ -8,9 +8,4 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class ApisimulatorBundle extends Bundle
 {
     public const BUNDLE_KEY = 'apisimulator';
-
-    public function build(ContainerBuilder $container)
-    {
-        parent::build($container);
-    }
 }

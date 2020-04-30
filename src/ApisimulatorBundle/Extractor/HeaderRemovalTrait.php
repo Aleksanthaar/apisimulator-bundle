@@ -18,8 +18,10 @@ trait HeaderRemovalTrait
      */
     protected function cleanHeaders(HeaderBag $headers): array
     {
-        return array_filter($headers->all(), function (string $headerName) {
-            return !in_array($headerName, $this->headersRemoval);
+        $lowerCaseHeaders = array_map('strtolower', $this->headersRemoval);
+
+        return array_filter($headers->all(), function (string $headerName) use ($lowerCaseHeaders) {
+            return !in_array(strtolower($headerName), $lowerCaseHeaders);
         }, ARRAY_FILTER_USE_KEY);
     }
 }

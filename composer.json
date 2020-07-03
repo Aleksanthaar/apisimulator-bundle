@@ -2,7 +2,6 @@
     "name": "aleksanthaar/apisimulator-bundle",
     "description": "Simlet generator integrated to Symfony profiler",
     "type": "library",
-    "license": "GPL v3",
     "authors": [
         {
             "name": "alhuo-smile",
